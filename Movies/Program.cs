@@ -8,6 +8,8 @@ using System.Text;
 using Entities.Models;
 using Service.Impl;
 using Service.Services;
+using SendGrid;
+
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,17 +21,37 @@ var connectionString = builder.Configuration.GetConnectionString("Connection");
 builder.Services.AddDbContext<AppDbContext>(
     options => options.UseSqlServer(connectionString)
 );
+IConfigurationRoot configuration = new ConfigurationBuilder()
+           .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+           .Build();
+
+// Retrieve SendGrid options
+var sendGridOptions = new SendGridOptions();
+configuration.GetSection("SendGrid").Bind(sendGridOptions);
+
+// Now you can use sendGridOptions to access SendGrid settings
+builder.Services.AddTransient<ISendGridClient>(provider =>
+{
+    var apiKey = configuration["SendGrid:ApiKey"];
+    return new SendGridClient(apiKey);
+});
+
+
+// Example usage:
+Console.WriteLine($"SendGrid API Key: {sendGridOptions.ApiKey}");
 
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+ 
 
 builder.Services.AddIdentity<User, IdentityRole>()
     .AddEntityFrameworkStores<AppDbContext>()
                 .AddDefaultTokenProviders();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IMovieService, MovieService>();
+builder.Services.AddTransient<IEmailService, EmailService>();
 builder.Services.AddSwaggerGen(c => {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Tomas Web API", Version = "v1" });
 

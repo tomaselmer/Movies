@@ -9,12 +9,14 @@ namespace Service.Impl
         public class UserService : IUserService
         {
             private readonly AppDbContext _context;
+            private readonly IEmailService _emailService;
 
-            public UserService(AppDbContext context)
-            {
-                _context = context;
-            }
-            public async Task<User> GetUserById(int userId)
+        public UserService(AppDbContext context, IEmailService emailService)
+        {
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
+        }
+        public async Task<User> GetUserById(int userId)
             {
                 return await _context.Users.FindAsync(userId);
         }
@@ -33,6 +35,7 @@ namespace Service.Impl
 
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
+            await SendWelcomeEmail(user);
             return user;
         }
 
@@ -55,6 +58,12 @@ namespace Service.Impl
                 _context.Movies.Remove(movie);
                 await _context.SaveChangesAsync();
             }
+        }
+        private async Task SendWelcomeEmail(User user)
+        {
+            var subject = "Welcome to our platform!";
+            var body = $"Dear {user.Email},\n\nWelcome to our platform!";
+            await _emailService.SendEmailAsync(user.Email, subject, body);
         }
     }
 }

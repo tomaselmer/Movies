@@ -10,6 +10,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccess", "DataAccess\DataAccess.csproj", "{E85733F2-3E84-49E5-8BC4-7F2D2C5C7C09}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{ED138822-9D37-4473-9D78-9245041C6BB9}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1A4F068E-3106-4998-AB35-4A9F905CB224} = {1A4F068E-3106-4998-AB35-4A9F905CB224}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Service", "Service\Service.csproj", "{1A4F068E-3106-4998-AB35-4A9F905CB224}"
 EndProject
